@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const UserModel = require("../../models/UserModel/index");
+const UsuarioModel = require("../../models/UserModel/index");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const generateToken = require("../../config/jwt.config");
+
+const isAuth = require("../../middlewares/isAuth");
+const attachCurrentUser = require("../../middlewares/attachCurrentUser");
 
 // rota de sign-Up ##################################################################
 
@@ -26,7 +29,7 @@ router.post("/signup", async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const newUser = await UserModel.create({
+    const newUser = await UsuarioModel.create({
       ...req.body,
       passwordHash: passwordHash,
     });
@@ -39,7 +42,7 @@ router.post("/signup", async (req, res) => {
 
 // rota de LogIN ###################################################################
 
- router.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -48,7 +51,7 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Por favor, informe seu email e senha." });
     }
 
-    const user = await UserModel.findOne({ email: email });
+    const user = await UsuarioModel.findOne({ email: email });
     if (!user) {
       return res.status(400).json({ message: "Usuário não cadastrado" });
     }
@@ -65,8 +68,70 @@ router.post("/signup", async (req, res) => {
   } catch (error) {
     return res.status(400).json(error);
   }
-}); 
+});
 
+// Rota para editar usuario ###############################################################
+
+router.put("/editar", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const loggedInUser = req.currentUser;
+
+    const editarusuario = await UsuarioModel.findByIdAndUpdate(
+      loggedInUser._id,
+      { ...req.body },
+      { new: true, runValidators: true }
+    );
+    delete editarusuario._doc.passwordHash;
+    return res.status(200).json(editarusuario);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
+
+// Rota para consultar todos os usuario ###############################################################
+
+router.get("/todos", async (req, res) => {
+  try {
+    const todos = await UsuarioModel.find();
+
+    return res.status(200).json(todos);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
+
+// Rota para buscar usuario pelo ID #####################################################################
+
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuario = await UsuarioModel.findById(id);
+    return res.status(200).json(usuario);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
+
+// Rota para buscar o current user #####################################################################
+
+router.get("/usuario/logado", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+      const usuariologado = req.currentUser
+
+    
+     const usuario = await UsuarioModel.findById(usuariologado._id); 
+    return res.status(200).json(usuario);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
+
+
+// Rota para deletar Usuario ##########################################################################
 
 
 module.exports = router;

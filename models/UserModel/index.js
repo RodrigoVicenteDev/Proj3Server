@@ -10,6 +10,7 @@ const UsuarioSchema = new Schema({
     match: /^[\w\.]+@([\w-]+\.)+[\w-]{2,4}$/,
   },
   receitas: [{ type: Schema.Types.ObjectId, ref: "Receita" }],
+  favoritas: [{ type: Schema.Types.ObjectId, ref: "Receita" }],
   comentarios: [{ type: Schema.Types.ObjectId, ref: "Comentario" }],
   resposta: [{ type: Schema.Types.ObjectId, ref: "Resposta" }],
   passwordHash: { type: String, required: true },

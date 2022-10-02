@@ -1,4 +1,3 @@
-const UserModel = require("../models/User.model");
 const UsuarioModel = require("../models/UserModel");
 
 async function attachCurrentUser(req, res, next){
