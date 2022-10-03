@@ -20,6 +20,9 @@ app.use("/comentario", ComentarioRoute);
 const RespostaRoute = require("./routes/Resposta");
 app.use("/resposta", RespostaRoute);
 
+const UploadRoute = require("./routes/upload/index");
+app.use("/upload", UploadRoute);
+
 
 
 

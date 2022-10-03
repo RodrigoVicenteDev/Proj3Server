@@ -8,7 +8,7 @@ const UsuarioModel = require("../../models/UserModel");
 const ComentarioModel = require("../../models/ComentariosModel");
 const ReceitaModel = require("../../models/ReceitaModel");
 const RespostaModel = require("../../models/respostaModel");
-const { route } = require("../receita");
+
 
 // Rota criar resposta ###############################################################################################
 router.post(
