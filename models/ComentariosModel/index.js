@@ -5,12 +5,13 @@ const ComentarioSchema = new Schema(
   {
     autor: { type: Schema.Types.ObjectId, ref: "Usuario" },
     content: { type: String, require: true, minlength: 1, maxlength: 300 },
+    receita: { type: Schema.Types.ObjectId, ref: "Receita" },
     resposta: [{ type: Schema.Types.ObjectId, ref: "respostas" }],
     avaliacao: { type: Number },
   },
   { timestamps: true }
 );
 
-const ComentarioModel = mongoose.model("Comentario", ComentarioSchema);
+const ComentarioModel = mongoose.model("Comentarios", ComentarioSchema);
 
 module.exports = ComentarioModel;

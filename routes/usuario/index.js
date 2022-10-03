@@ -8,6 +8,10 @@ const generateToken = require("../../config/jwt.config");
 
 const isAuth = require("../../middlewares/isAuth");
 const attachCurrentUser = require("../../middlewares/attachCurrentUser");
+const { route } = require("../receita");
+const ReceitaModel = require("../../models/ReceitaModel");
+const ComentarioModel = require("../../models/ComentariosModel");
+const RespostaModel = require("../../models/respostaModel");
 
 // rota de sign-Up ##################################################################
 
@@ -119,10 +123,9 @@ router.get("/:id", async (req, res) => {
 
 router.get("/usuario/logado", isAuth, attachCurrentUser, async (req, res) => {
   try {
-      const usuariologado = req.currentUser
+    const usuariologado = req.currentUser;
 
-    
-     const usuario = await UsuarioModel.findById(usuariologado._id); 
+    const usuario = await UsuarioModel.findById(usuariologado._id);
     return res.status(200).json(usuario);
   } catch (error) {
     console.log(error);
@@ -130,8 +133,19 @@ router.get("/usuario/logado", isAuth, attachCurrentUser, async (req, res) => {
   }
 });
 
-
 // Rota para deletar Usuario ##########################################################################
-
+router.delete("/deletar", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const user = req.currentUser._id;
+    const deletarUsuarui = await UsuarioModel.findByIdAndDelete(user);
+    const deletarReceita = await ReceitaModel.deleteMany({ autor: user });
+    const deletarComentario = await ComentarioModel.deleteMany({ autor: user });
+    const deleteRespostas = await RespostaModel.deleteMany({ autor: user });
+    return res.status(204).json("Usuario excluido com sucesso");
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
 
 module.exports = router;

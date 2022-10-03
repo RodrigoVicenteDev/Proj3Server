@@ -6,6 +6,8 @@ const attachCurrentUser = require("../../middlewares/attachCurrentUser");
 
 const ReceitaModel = require("../../models/ReceitaModel");
 const UsuarioModel = require("../../models/UserModel");
+const ComentarioModel = require("../../models/ComentariosModel");
+const RespostaModel = require("../../models/respostaModel");
 
 // Roda de criação receita ##############################################################
 
@@ -62,7 +64,11 @@ router.get("/busca/:id", async (req, res) => {
 router.put("/editar/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const receita = await ReceitaModel.findByIdAndUpdate(id, { ...req.body },{ new: true, runValidators: true });
+    const receita = await ReceitaModel.findByIdAndUpdate(
+      id,
+      { ...req.body },
+      { new: true, runValidators: true }
+    );
     return res.status(200).json(receita);
   } catch (error) {
     console.log(error);
@@ -71,37 +77,88 @@ router.put("/editar/:id", async (req, res) => {
 });
 // Rota adicionar aos Favoritos ##################################################
 
-router.put("/favoritos/adicionar/:id", isAuth,attachCurrentUser, async(req,res)=>{
+router.put(
+  "/favoritos/adicionar/:id",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
     try {
-        const usuario = req.currentUser._id
-        const { id } = req.params
+      const usuario = req.currentUser._id;
+      const { id } = req.params;
 
-        const receitafavoritada = await ReceitaModel.findByIdAndUpdate(id, {$inc : {favoritos : +1}},{new:true})
-        await UsuarioModel.findByIdAndUpdate(usuario,{$push:{favoritas:id}})
-        return res.status(200).json(receitafavoritada)
-        
+      const receitafavoritada = await ReceitaModel.findByIdAndUpdate(
+        id,
+        { $inc: { favoritos: +1 } },
+        { new: true }
+      );
+      await UsuarioModel.findByIdAndUpdate(usuario, {
+        $push: { favoritas: id },
+      });
+      return res.status(200).json(receitafavoritada);
     } catch (error) {
-    console.log(error);
-    return res.status(400).json(error);
-        
+      console.log(error);
+      return res.status(400).json(error);
     }
-})
+  }
+);
 //Rota excluir dos favoritos #####################################################
-router.put("/favoritos/excluir/:id", isAuth,attachCurrentUser, async(req,res)=>{
+router.put(
+  "/favoritos/excluir/:id",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
     try {
-        const usuario = req.currentUser._id
-        const { id } = req.params
+      const usuario = req.currentUser._id;
+      const { id } = req.params;
 
-        const receitafavoritada = await ReceitaModel.findByIdAndUpdate(id, {$inc : {favoritos : -1}},{new:true})
-        await UsuarioModel.findByIdAndUpdate(usuario,{$pull:{favoritas:id}})
-        return res.status(200).json(receitafavoritada)
-        
+      const receitafavoritada = await ReceitaModel.findByIdAndUpdate(
+        id,
+        { $inc: { favoritos: -1 } },
+        { new: true }
+      );
+      await UsuarioModel.findByIdAndUpdate(usuario, {
+        $pull: { favoritas: id },
+      });
+      return res.status(200).json(receitafavoritada);
     } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  }
+);
+//Rota deletar receita ###########################################################
+router.delete("/deletar/:id", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const user = req.currentUser._id;
+    const { id } = req.params;
+
+    // excluir a receita das arrays de favoritos dos usuarios
+
+    const delfavoritos = await UsuarioModel.updateMany({
+      $pull: { favoritas: id },
+    });
+
+    const deletarReceita = await ReceitaModel.findByIdAndDelete(id);
+
+    const atualizarusuariosrec = await UsuarioModel.findByIdAndUpdate(user, {
+      $pull: { receitas: deletarReceita._id },
+    });
+
+    const comentarios = await ComentarioModel.find({ receita: id });
+
+    comentarios.forEach(async (comentario) => {
+      comentario.resposta.forEach(async (element) => {
+        await RespostaModel.findByIdAndDelete(element._id);
+      });
+    });
+
+    const deletarcomentario = await ComentarioModel.deleteMany({ receita: id });
+
+    return res.status(200).json("Sucesso");
+  } catch (error) {
     console.log(error);
     return res.status(400).json(error);
-        
-    }
-})
-//Rota deletar receita ###########################################################
+  }
+});
 
 module.exports = router;

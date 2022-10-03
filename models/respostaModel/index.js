@@ -6,7 +6,10 @@ const Schema = mongoose.Schema;
 const RespostaSchema = new Schema({
     autor: { type: Schema.Types.ObjectId, ref: "Usuario" },
     content: { type: String, require: true, minlength: 1, maxlength: 300 },
-    resposta: [{ type: Schema.Types.ObjectId, ref: "respostas" }],
+    comentario: { type: Schema.Types.ObjectId, ref: "Comentario" },
+    receita: { type: Schema.Types.ObjectId, ref: "Receita" },
+
+    resposta: [{ type: Schema.Types.ObjectId, ref: "Resposta" }],
 },
 { timestamps: true })
 
