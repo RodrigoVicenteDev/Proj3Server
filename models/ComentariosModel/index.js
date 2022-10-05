@@ -7,7 +7,7 @@ const ComentarioSchema = new Schema(
     content: { type: String, require: true, minlength: 1, maxlength: 300 },
     receita: { type: Schema.Types.ObjectId, ref: "Receita" },
     resposta: [{ type: Schema.Types.ObjectId, ref: "respostas" }],
-    avaliacao: { type: Number },
+    avaliacao: { type: String },
   },
   { timestamps: true }
 );
