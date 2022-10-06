@@ -56,7 +56,7 @@ router.get("/popular/:idreceita", isAuth, attachCurrentUser, async (req,res)=>{
         const {idreceita} = req.params
         const comentario = await ComentarioModel.find({receita:idreceita}).populate({
             path: "autor",
-            select:"nome"
+            select:"nome profilePic"
             
             
           });

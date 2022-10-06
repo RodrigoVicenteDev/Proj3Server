@@ -2,11 +2,10 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const dbConection = require("./config/db.config");
-dbConection ();
+dbConection();
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: process.env.REACT_APP_URI }));
-
 
 const UsuarioRoute = require("./routes/usuario");
 app.use("/usuario", UsuarioRoute);
@@ -21,11 +20,7 @@ const RespostaRoute = require("./routes/Resposta");
 app.use("/resposta", RespostaRoute);
 
 const UploadRoute = require("./routes/upload/index");
-app.use("/upload", UploadRoute);
-
-
-
-
+app.use("/", UploadRoute);
 
 app.listen(process.env.PORT, () => {
   console.log("SERVER OPEN AND RUNNING ON PORT");

@@ -37,7 +37,7 @@ const ReceitaSchema = new Schema({
   ingredientes: [{ type: String, require: true }],
   preparo: [{ type: String, require: true }],
   comentarios: [{ type: Schema.Types.ObjectId, ref: "Comentarios" }],
-  favoritos: { type: Number },
+  favoritos: { type: Number, default:0 },
 });
 
 const ReceitaModel = mongoose.model("Receita", ReceitaSchema);
