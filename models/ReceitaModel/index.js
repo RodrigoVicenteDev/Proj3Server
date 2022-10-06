@@ -21,7 +21,7 @@ const ReceitaSchema = new Schema({
       "Carne Suína",
       "Carnes",
       "Frangos e Aves",
-      "Lanches,",
+      "Lanches",
       "Massas",
       "Peixes e Frutos do Mar",
       "Sobremesas",
