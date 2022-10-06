@@ -16,7 +16,7 @@ app.use("/receita", ReceitaRoute);
 const ComentarioRoute = require("./routes/comentario");
 app.use("/comentario", ComentarioRoute);
 
-const RespostaRoute = require("./routes/Resposta");
+const RespostaRoute = require("./routes/resposta");
 app.use("/resposta", RespostaRoute);
 
 const UploadRoute = require("./routes/upload/index");
