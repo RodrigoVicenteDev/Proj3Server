@@ -125,7 +125,7 @@ router.get("/usuario/logado", isAuth, attachCurrentUser, async (req, res) => {
   try {
     const usuariologado = req.currentUser;
 
-    const usuario = await UsuarioModel.findById(usuariologado._id).populate({path:"receitas"});
+    const usuario = await UsuarioModel.findById(usuariologado._id).populate({path:"receitas" , select: "nome favoritos imagemurl"}).populate({path:"favoritas" , select:"nome imagemurl"});
     return res.status(200).json(usuario);
   } catch (error) {
     console.log(error);
