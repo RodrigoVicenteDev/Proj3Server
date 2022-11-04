@@ -3,6 +3,8 @@ require("dotenv").config();
 const cors = require("cors");
 const dbConection = require("./config/db.config");
 dbConection();
+const fastify = require("fastify")({ logger: true });
+
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: process.env.REACT_APP_URI }));
@@ -22,6 +24,18 @@ app.use("/resposta", RespostaRoute);
 const UploadRoute = require("./routes/upload/index");
 app.use("/", UploadRoute);
 
-app.listen(process.env.PORT, () => {
+const start = async () => {
+  try {
+    await fastify.listen(8080, "0.0.0.0");
+    fastify.log.info(`server listening on ${fastify.server.address().port}`);
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
+start();
+
+/* app.listen(process.env.PORT, () => {
   console.log("SERVER OPEN AND RUNNING ON PORT");
 });
+ */

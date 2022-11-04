@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
 
     const user = await UsuarioModel.findOne({ email: email });
     if (!user) {
-      return res.status(400).json({ message: "Usuário não cadastrado" });
+      return res.status(400).json({ message: "Usuário ou senha incorretos" });
     }
     if (await bcrypt.compare(password, user.passwordHash)) {
       delete user._doc.passwordHash;
